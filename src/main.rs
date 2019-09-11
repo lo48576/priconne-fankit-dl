@@ -22,6 +22,9 @@ pub struct CliOpt {
     /// Destination directory
     #[structopt(short, long, parse(from_os_str))]
     dest: Option<PathBuf>,
+    /// Crawl delay in milliseconds
+    #[structopt(long, default_value = "1000")]
+    delay: u64,
 }
 
 /// Initialize logger.
@@ -142,7 +145,7 @@ fn main() -> Result<(), BoxedError> {
 
     let opt = CliOpt::from_args();
 
-    let crawl_delay = Duration::from_millis(1000);
+    let crawl_delay = Duration::from_millis(opt.delay);
     let dest_dir = match &opt.dest {
         Some(dest) => Cow::Borrowed(dest.as_path()),
         None => Cow::Owned(std::env::current_dir()?),
