@@ -1,6 +1,9 @@
 //! Fankit-related stuff.
 
-use std::collections::{HashSet, VecDeque};
+use std::{
+    collections::{HashSet, VecDeque},
+    time::Duration,
+};
 
 pub use self::{
     id::{FankitId, FankitIdParseError},
@@ -24,6 +27,7 @@ const URL_FANKIT_LIST_BASE: &str = "https://priconne-redive.jp/fankit02/page/";
 /// Returns fankits if new fankit is detected.
 pub fn get_fankits_if_new_fankit_found(
     known_fankits: impl IntoIterator<Item = FankitId>,
+    crawl_delay: Duration,
 ) -> Result<Option<HashSet<FankitId>>, Box<dyn std::error::Error + Send + Sync + 'static>> {
     use std::iter::FromIterator;
 
@@ -62,6 +66,9 @@ pub fn get_fankits_if_new_fankit_found(
             list_done,
             list_undone
         );
+
+        log::debug!("Sleeping for {:?}", crawl_delay);
+        std::thread::sleep(crawl_delay);
     }
 
     Ok(Some(fankits))
