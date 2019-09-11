@@ -8,12 +8,12 @@ use crate::{
 };
 
 /// Fankit ID.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FankitId(usize);
 
 impl FankitId {
     /// Creates a new `FankitId`.
-    fn new(v: usize) -> Self {
+    pub(crate) fn new(v: usize) -> Self {
         Self(v)
     }
 

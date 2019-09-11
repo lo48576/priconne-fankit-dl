@@ -13,7 +13,7 @@ pub struct FankitListPageIndex(usize);
 
 impl FankitListPageIndex {
     /// Creates a new `FankitListPageIndex`.
-    pub fn new(v: usize) -> Self {
+    pub const fn new(v: usize) -> Self {
         Self(v)
     }
 
