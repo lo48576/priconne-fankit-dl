@@ -21,15 +21,29 @@ const URL_FANKIT_ITEM_BASE: &str = URL_FANKIT_TOP;
 /// URL prefix for fankit list pages.
 const URL_FANKIT_LIST_BASE: &str = "https://priconne-redive.jp/fankit02/page/";
 
-/// Returns fankits.
-pub fn get_fankits() -> Result<HashSet<FankitId>, Box<dyn std::error::Error + Send + Sync + 'static>>
-{
+/// Returns fankits if new fankit is detected.
+pub fn get_fankits_if_new_fankit_found(
+    known_fankits: impl IntoIterator<Item = FankitId>,
+) -> Result<Option<HashSet<FankitId>>, Box<dyn std::error::Error + Send + Sync + 'static>> {
+    use std::iter::FromIterator;
+
+    const FIRST_PAGE_INDEX: FankitListPageIndex = FankitListPageIndex::new(1);
+
+    let (new_fankits, other_lists) = FIRST_PAGE_INDEX.load()?;
+    let new_fankits = HashSet::from_iter(new_fankits);
+    let known_fankits = HashSet::from_iter(known_fankits);
+
+    if new_fankits.is_subset(&known_fankits) {
+        // There are no new fankits.
+        return Ok(None);
+    }
+
     // Wanted to pop from `HashSet` but it is not in std hashset.
     // Using `VecDeque` instead.
-    let mut list_undone: VecDeque<_> = std::iter::once(FankitListPageIndex::new(1)).collect();
+    let mut list_undone = VecDeque::from_iter(other_lists);
 
-    let mut fankits = HashSet::new();
-    let mut list_done = HashSet::new();
+    let mut fankits = new_fankits;
+    let mut list_done = std::iter::once(FIRST_PAGE_INDEX).collect::<HashSet<_>>();
 
     // Load the index pages.
     while let Some(list_page) = list_undone.pop_front() {
@@ -50,5 +64,5 @@ pub fn get_fankits() -> Result<HashSet<FankitId>, Box<dyn std::error::Error + Se
         );
     }
 
-    Ok(fankits)
+    Ok(Some(fankits))
 }

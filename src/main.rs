@@ -7,7 +7,7 @@ use std::{
 
 use structopt::StructOpt;
 
-use self::fankit::get_fankits;
+use self::fankit::{get_fankits_if_new_fankit_found, FankitId};
 
 mod fankit;
 mod node;
@@ -92,7 +92,18 @@ fn main() -> Result<(), BoxedError> {
         .map(|ent_res| ent_res.map(|entry| entry.file_name().to_string_lossy().into_owned()))
         .collect::<Result<Vec<_>, _>>()?;
 
-    let fankits = get_fankits()?;
+    let downloaded_items = dir_items
+        .iter()
+        .filter_map(|name| name.find('-').map(|hyphen_pos| &name[..hyphen_pos]))
+        .flat_map(|num_str| num_str.parse::<usize>())
+        .map(FankitId::new);
+    let fankits = match get_fankits_if_new_fankit_found(downloaded_items)? {
+        Some(v) => v,
+        None => {
+            log::info!("There seems to be no new fankits");
+            return Ok(());
+        }
+    };
     log::debug!("fankits = {:?}", fankits);
 
     for fankit in fankits {
