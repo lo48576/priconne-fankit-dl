@@ -1,8 +1,11 @@
 use std::{
+    borrow::Cow,
     fs::{self, File},
     io::{self, BufWriter, Write},
-    path::Path,
+    path::{Path, PathBuf},
 };
+
+use structopt::StructOpt;
 
 use self::fankit::get_fankits;
 
@@ -10,6 +13,14 @@ mod fankit;
 mod node;
 
 type BoxedError = Box<dyn std::error::Error + Send + Sync + 'static>;
+
+/// Fankits downloader for Princess Connect Re:Dive.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, StructOpt)]
+pub struct CliOpt {
+    /// Destination directory
+    #[structopt(short, long, parse(from_os_str))]
+    dest: Option<PathBuf>,
+}
 
 /// Initialize logger.
 fn init_logger() {
@@ -69,10 +80,15 @@ where
 fn main() -> Result<(), BoxedError> {
     init_logger();
 
-    let base_dir = std::env::current_dir()?;
-    log::debug!("base directory: {}", base_dir.display());
+    let opt = CliOpt::from_args();
 
-    let dir_items = fs::read_dir(&base_dir)?
+    let dest_dir = match &opt.dest {
+        Some(dest) => Cow::Borrowed(dest.as_path()),
+        None => Cow::Owned(std::env::current_dir()?),
+    };
+    log::debug!("destination directory: {}", dest_dir.display());
+
+    let dir_items = fs::read_dir(&dest_dir)?
         .map(|ent_res| ent_res.map(|entry| entry.file_name().to_string_lossy().into_owned()))
         .collect::<Result<Vec<_>, _>>()?;
 
@@ -92,7 +108,7 @@ fn main() -> Result<(), BoxedError> {
         log::debug!("info = {:?}", info);
         log::info!("Downloading images in item {:?}", item_name);
 
-        let item_dir = base_dir.join(&item_name);
+        let item_dir = dest_dir.join(&item_name);
         if let Err(e) = fs::create_dir(&item_dir) {
             log::error!("Failed to create item dir {:?}: {}", item_dir.display(), e);
         }
