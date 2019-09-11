@@ -4,6 +4,7 @@ use std::{
     fs::{self, File},
     io::{self, BufWriter, Write},
     path::{Path, PathBuf},
+    time::Duration,
 };
 
 use structopt::StructOpt;
@@ -21,6 +22,9 @@ pub struct CliOpt {
     /// Destination directory
     #[structopt(short, long, parse(from_os_str))]
     dest: Option<PathBuf>,
+    /// Crawl delay in milliseconds
+    #[structopt(long, default_value = "1000")]
+    delay: u64,
 }
 
 /// Initialize logger.
@@ -82,6 +86,7 @@ fn download_fankits(
     dest_dir: &Path,
     fankits: &HashSet<FankitId>,
     downloaded_items: &HashSet<FankitId>,
+    crawl_delay: Duration,
 ) -> Result<(), BoxedError> {
     log::debug!("fankits = {:?}", fankits);
 
@@ -127,6 +132,9 @@ fn download_fankits(
                 continue;
             }
         }
+
+        log::debug!("Sleeping for {:?}", crawl_delay);
+        std::thread::sleep(crawl_delay);
     }
 
     Ok(())
@@ -137,6 +145,7 @@ fn main() -> Result<(), BoxedError> {
 
     let opt = CliOpt::from_args();
 
+    let crawl_delay = Duration::from_millis(opt.delay);
     let dest_dir = match &opt.dest {
         Some(dest) => Cow::Borrowed(dest.as_path()),
         None => Cow::Owned(std::env::current_dir()?),
@@ -153,8 +162,8 @@ fn main() -> Result<(), BoxedError> {
         .flat_map(|num_str| num_str.parse::<usize>())
         .map(FankitId::new)
         .collect::<HashSet<_>>();
-    match get_fankits_if_new_fankit_found(downloaded_items.iter().copied())? {
-        Some(fankits) => download_fankits(&dest_dir, &fankits, &downloaded_items)?,
+    match get_fankits_if_new_fankit_found(downloaded_items.iter().copied(), crawl_delay)? {
+        Some(fankits) => download_fankits(&dest_dir, &fankits, &downloaded_items, crawl_delay)?,
         None => log::info!("There seems to be no new fankits"),
     }
 
