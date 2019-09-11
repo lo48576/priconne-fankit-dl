@@ -1,0 +1,17 @@
+[package]
+name = "priconne-fankit-dl"
+version = "0.1.0"
+authors = ["YOSHIOKA Takuma <lo48576@hard-wi.red>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+description = "Princess Connect Re:Dive fankit downloader"
+repository = "https://github.com/lo48576/priconne-fankit-dl"
+publish = false
+
+[dependencies]
+env_logger = "0.6.2"
+html5ever = "0.24"
+log = "0.4.8"
+reqwest = "0.9.19"
+structopt = "0.3.1"

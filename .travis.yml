@@ -1,0 +1,11 @@
+language: rust
+cache: cargo
+rust:
+  - stable
+  - beta
+  - 1.37.0
+script:
+  - cargo build --verbose --all --all-features
+  - cargo test --verbose --all --all-features
+notifications:
+  email: false
