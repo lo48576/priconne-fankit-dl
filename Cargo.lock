@@ -800,7 +800,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "priconne-fankit-dl"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "env_logger 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "html5ever 0.24.0 (registry+https://github.com/rust-lang/crates.io-index)",
