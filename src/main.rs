@@ -78,34 +78,11 @@ where
     Ok(())
 }
 
-fn main() -> Result<(), BoxedError> {
-    init_logger();
-
-    let opt = CliOpt::from_args();
-
-    let dest_dir = match &opt.dest {
-        Some(dest) => Cow::Borrowed(dest.as_path()),
-        None => Cow::Owned(std::env::current_dir()?),
-    };
-    log::debug!("destination directory: {}", dest_dir.display());
-
-    let dir_items = fs::read_dir(&dest_dir)?
-        .map(|ent_res| ent_res.map(|entry| entry.file_name().to_string_lossy().into_owned()))
-        .collect::<Result<Vec<_>, _>>()?;
-
-    let downloaded_items = dir_items
-        .iter()
-        .filter_map(|name| name.find('-').map(|hyphen_pos| &name[..hyphen_pos]))
-        .flat_map(|num_str| num_str.parse::<usize>())
-        .map(FankitId::new)
-        .collect::<HashSet<_>>();
-    let fankits = match get_fankits_if_new_fankit_found(downloaded_items.iter().copied())? {
-        Some(v) => v,
-        None => {
-            log::info!("There seems to be no new fankits");
-            return Ok(());
-        }
-    };
+fn download_fankits(
+    dest_dir: &Path,
+    fankits: &HashSet<FankitId>,
+    downloaded_items: &HashSet<FankitId>,
+) -> Result<(), BoxedError> {
     log::debug!("fankits = {:?}", fankits);
 
     for fankit in fankits {
@@ -150,6 +127,35 @@ fn main() -> Result<(), BoxedError> {
                 continue;
             }
         }
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<(), BoxedError> {
+    init_logger();
+
+    let opt = CliOpt::from_args();
+
+    let dest_dir = match &opt.dest {
+        Some(dest) => Cow::Borrowed(dest.as_path()),
+        None => Cow::Owned(std::env::current_dir()?),
+    };
+    log::debug!("destination directory: {}", dest_dir.display());
+
+    let dir_items = fs::read_dir(&dest_dir)?
+        .map(|ent_res| ent_res.map(|entry| entry.file_name().to_string_lossy().into_owned()))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let downloaded_items = dir_items
+        .iter()
+        .filter_map(|name| name.find('-').map(|hyphen_pos| &name[..hyphen_pos]))
+        .flat_map(|num_str| num_str.parse::<usize>())
+        .map(FankitId::new)
+        .collect::<HashSet<_>>();
+    match get_fankits_if_new_fankit_found(downloaded_items.iter().copied())? {
+        Some(fankits) => download_fankits(&dest_dir, &fankits, &downloaded_items)?,
+        None => log::info!("There seems to be no new fankits"),
     }
 
     Ok(())
