@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    collections::HashSet,
     fs::{self, File},
     io::{self, BufWriter, Write},
     path::{Path, PathBuf},
@@ -96,8 +97,9 @@ fn main() -> Result<(), BoxedError> {
         .iter()
         .filter_map(|name| name.find('-').map(|hyphen_pos| &name[..hyphen_pos]))
         .flat_map(|num_str| num_str.parse::<usize>())
-        .map(FankitId::new);
-    let fankits = match get_fankits_if_new_fankit_found(downloaded_items)? {
+        .map(FankitId::new)
+        .collect::<HashSet<_>>();
+    let fankits = match get_fankits_if_new_fankit_found(downloaded_items.iter().copied())? {
         Some(v) => v,
         None => {
             log::info!("There seems to be no new fankits");
@@ -107,10 +109,9 @@ fn main() -> Result<(), BoxedError> {
     log::debug!("fankits = {:?}", fankits);
 
     for fankit in fankits {
-        let dir_prefix = format!("{}-", fankit.to_usize());
-        if let Some(item) = dir_items.iter().find(|name| name.starts_with(&dir_prefix)) {
+        if downloaded_items.contains(&fankit) {
             // Already downloaded.
-            log::info!("Skipping item {}", item);
+            log::info!("Skipping fankit {:?}", fankit);
             continue;
         }
         let info = fankit.load()?;
