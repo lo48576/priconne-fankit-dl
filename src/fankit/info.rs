@@ -48,7 +48,7 @@ impl FankitInfo {
         let ty = inner_text(fankit_type_elem)
             .replace(char::is_whitespace, " ")
             .trim()
-            .to_owned();;
+            .to_owned();
 
         let fankit_title_elem = Traverse::new(contents_elem.clone())
             .find(|node| node_has_class("title", node))
