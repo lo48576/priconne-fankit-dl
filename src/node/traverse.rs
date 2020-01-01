@@ -1,6 +1,6 @@
 //! Nodes traversal iterator.
 
-use html5ever::rcdom::Handle;
+use markup5ever_rcdom::Handle;
 
 /// Depth-first tree traversal iterator.
 pub struct Traverse {
