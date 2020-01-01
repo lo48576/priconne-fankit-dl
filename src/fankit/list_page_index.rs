@@ -36,9 +36,7 @@ impl FankitListPageIndex {
 
         let mut fankits = Vec::new();
         let mut list_pages = Vec::new();
-        for href in
-            get_anchors(dom.document.clone()).filter(|href| href.starts_with(URL_FANKIT_TOP))
-        {
+        for href in get_anchors(dom.document).filter(|href| href.starts_with(URL_FANKIT_TOP)) {
             if let Ok(fankit) = href.parse::<FankitId>() {
                 fankits.push(fankit);
             } else if let Ok(list_page) = href.parse::<FankitListPageIndex>() {

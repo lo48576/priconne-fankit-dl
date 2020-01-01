@@ -31,7 +31,7 @@ impl FankitId {
     pub fn load(self) -> Result<FankitInfo, Box<dyn error::Error + Send + Sync + 'static>> {
         log::trace!("Loading fankit page: {:?}", self);
         let dom = load_dom(&self.to_url())?;
-        FankitInfo::from_node(self, dom.document.clone())
+        FankitInfo::from_node(self, dom.document)
     }
 }
 
