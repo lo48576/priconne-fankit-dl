@@ -2,7 +2,7 @@
 
 use std::collections::HashSet;
 
-use html5ever::rcdom::Handle;
+use markup5ever_rcdom::Handle;
 
 use crate::{
     fankit::FankitId,

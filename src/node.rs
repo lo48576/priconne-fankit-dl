@@ -2,11 +2,8 @@
 
 use std::collections::HashSet;
 
-use html5ever::{
-    parse_document,
-    rcdom::{Handle, NodeData, RcDom},
-    tree_builder::Attribute,
-};
+use html5ever::{parse_document, tree_builder::Attribute};
+use markup5ever_rcdom::{Handle, NodeData, RcDom};
 
 pub use self::traverse::Traverse;
 
