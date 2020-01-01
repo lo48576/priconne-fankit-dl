@@ -114,7 +114,7 @@ fn download_fankits(
                     .expect("URL must have slash characters");
                 &image_url[(last_slash + 1)..]
             };
-            let mut resp = match reqwest::get(image_url) {
+            let mut resp = match reqwest::blocking::get(image_url) {
                 Ok(v) => v,
                 Err(e) => {
                     log::error!("Failed to download image {:?}: {}", image_url, e);
