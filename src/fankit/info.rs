@@ -52,7 +52,7 @@ impl FankitInfo {
 
         let fankit_title_elem = Traverse::new(contents_elem.clone())
             .find(|node| node_has_class("title", node))
-            .ok_or("Failed to get fankit type")?;
+            .ok_or("Failed to get fankit title")?;
         let title = inner_text(fankit_title_elem)
             .replace(char::is_whitespace, " ")
             .trim()
