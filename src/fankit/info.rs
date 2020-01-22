@@ -38,7 +38,12 @@ impl FankitInfo {
         node: Handle,
     ) -> Result<Self, Box<dyn std::error::Error + Send + Sync + 'static>> {
         // Node with ID value `contents`.
-        let contents_elem = Traverse::new(node)
+        //
+        // This `.clone()` for `node` should NOT be removed, because the `node` has all document
+        // content with refcount.
+        // Dropping `node` here causes whole trees node to be dropped except for `contents_elem`.
+        #[allow(clippy::redundant_clone)]
+        let contents_elem = Traverse::new(node.clone())
             .find(|node| node_has_id("contents", node))
             .ok_or("Failed to get contents element")?;
 
