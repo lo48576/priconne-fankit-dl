@@ -13,6 +13,9 @@ mod traverse;
 pub fn get_anchors(node: Handle) -> impl Iterator<Item = String> {
     // Get anchors.
     // Collect to `HashSet<_>` to deduplicate.
+    // allow(clippy::mutable_key_type): This is a hashset of tendrils, so allowing
+    // interior mutability here is safe.
+    #[allow(clippy::mutable_key_type)]
     let anchors = Traverse::new(node)
         .filter_map(|node| match &node.data {
             NodeData::Element { name, attrs, .. } => {
