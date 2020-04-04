@@ -3,7 +3,7 @@ cache: cargo
 rust:
   - stable
   - beta
-  - 1.37.0
+  - 1.42.0
 script:
   - cargo build --verbose --all --all-features
   - cargo test --verbose --all --all-features
