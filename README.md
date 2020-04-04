@@ -1,7 +1,7 @@
 # priconne-fankit-dl
 
 [![Build Status](https://travis-ci.com/lo48576/priconne-fankit-dl.svg?branch=develop)](https://travis-ci.com/lo48576/priconne-fankit-dl)
-![Minimum rustc version: 1.37](https://img.shields.io/badge/rustc-1.37+-lightgray.svg)
+![Minimum rustc version: 1.42](https://img.shields.io/badge/rustc-1.42+-lightgray.svg)
 
 [Fankits](https://priconne-redive.jp/fankit02/) downloader for [Princess Connect Re:Dive](https://priconne-redive.jp/), written in [Rust](https://www.rust-lang.org/).
 
