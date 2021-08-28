@@ -91,7 +91,7 @@ fn download_fankits(
     log::debug!("fankits = {:?}", fankits);
 
     for fankit in fankits {
-        if downloaded_items.contains(&fankit) {
+        if downloaded_items.contains(fankit) {
             // Already downloaded.
             log::info!("Skipping fankit {:?}", fankit);
             continue;
