@@ -114,7 +114,7 @@ fn download_fankits(
                     .expect("URL must have slash characters");
                 &image_url[(last_slash + 1)..]
             };
-            let mut resp = match reqwest::blocking::get(image_url) {
+            let mut resp = match client()?.get(image_url).send() {
                 Ok(v) => v,
                 Err(e) => {
                     log::error!("Failed to download image {:?}: {}", image_url, e);
@@ -168,4 +168,13 @@ fn main() -> Result<(), BoxedError> {
     }
 
     Ok(())
+}
+
+/// Creates an HTTP client.
+fn client() -> reqwest::Result<reqwest::blocking::Client> {
+    static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
+
+    reqwest::blocking::Client::builder()
+        .user_agent(APP_USER_AGENT)
+        .build()
 }

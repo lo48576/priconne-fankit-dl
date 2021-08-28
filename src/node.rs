@@ -5,6 +5,8 @@ use std::collections::HashSet;
 use html5ever::{parse_document, tree_builder::Attribute};
 use markup5ever_rcdom::{Handle, NodeData, RcDom};
 
+use crate::client;
+
 pub use self::traverse::Traverse;
 
 mod traverse;
@@ -42,7 +44,7 @@ pub fn load_dom(url: &str) -> Result<RcDom, Box<dyn std::error::Error + Send + S
     let dom = {
         use html5ever::tendril::stream::TendrilSink;
 
-        let top_text = reqwest::blocking::get(url)?.error_for_status()?.text()?;
+        let top_text = client()?.get(url).send()?.error_for_status()?.text()?;
         parse_document(RcDom::default(), Default::default())
             .from_utf8()
             .read_from(&mut std::io::Cursor::new(&top_text))?
