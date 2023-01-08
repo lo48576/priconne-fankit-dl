@@ -121,7 +121,7 @@ fn download_fankits(
                     continue;
                 }
             };
-            let image_path = item_dir.join(&image_filename);
+            let image_path = item_dir.join(image_filename);
             let write_result = write_to_buffered_file(&image_path, |writer| {
                 resp.copy_to(writer)
                     .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;

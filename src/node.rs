@@ -84,7 +84,7 @@ pub fn inner_text(node: Handle) -> String {
     let mut buf = String::new();
     for node in Traverse::new(node) {
         if let NodeData::Text { contents } = &node.data {
-            buf.push_str(&**contents.borrow());
+            buf.push_str(&contents.borrow());
         }
     }
     buf
