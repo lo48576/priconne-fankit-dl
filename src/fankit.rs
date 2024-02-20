@@ -5,11 +5,7 @@ use std::{
     time::Duration,
 };
 
-pub use self::{
-    id::{FankitId, FankitIdParseError},
-    info::FankitInfo,
-    list_page_index::{FankitListPageIndex, FankitListPageIndexParseError},
-};
+pub use self::{id::FankitId, info::FankitInfo, list_page_index::FankitListPageIndex};
 
 mod id;
 mod info;
