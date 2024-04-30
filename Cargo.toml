@@ -10,9 +10,9 @@ repository = "https://github.com/lo48576/priconne-fankit-dl"
 publish = false
 
 [dependencies]
-env_logger = "0.10.0"
-html5ever = "0.26.0"
+env_logger = "0.11.3"
+html5ever = "0.27.0"
 log = "0.4.8"
-markup5ever_rcdom = "0.2"
-reqwest = { version = "0.11.4", features = ["blocking"] }
+markup5ever_rcdom = "0.3.0"
+reqwest = { version = "0.12.4", features = ["blocking"] }
 structopt = "0.3.1"
