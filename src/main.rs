@@ -102,7 +102,7 @@ fn download_fankits(
         log::debug!("info = {:?}", info);
         log::info!("Downloading images in item {:?}", item_name);
 
-        let item_dir = dest_dir.join(&item_name);
+        let item_dir = dest_dir.join(sanitize_path_component(&item_name));
         if let Err(e) = fs::create_dir(&item_dir) {
             log::error!("Failed to create item dir {:?}: {}", item_dir.display(), e);
         }
@@ -121,7 +121,7 @@ fn download_fankits(
                     continue;
                 }
             };
-            let image_path = item_dir.join(image_filename);
+            let image_path = item_dir.join(sanitize_path_component(image_filename));
             let write_result = write_to_buffered_file(&image_path, |writer| {
                 resp.copy_to(writer)
                     .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
@@ -177,4 +177,23 @@ fn client() -> reqwest::Result<reqwest::blocking::Client> {
     reqwest::blocking::Client::builder()
         .user_agent(APP_USER_AGENT)
         .build()
+}
+
+/// Sanitizes a string as a path component.
+fn sanitize_path_component(s: &str) -> String {
+    // This sanitization is incomplete, but maybe practically enough.
+    s.chars()
+        .map(|c| match c {
+            '<' => '＜',
+            '>' => '＞',
+            ':' => '：',
+            '"' => '_',
+            '/' => '／',
+            '\\' => '＼',
+            '|' => '｜',
+            '?' => '？',
+            '*' => '＊',
+            c => c,
+        })
+        .collect()
 }
